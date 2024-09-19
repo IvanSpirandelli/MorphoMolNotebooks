@@ -1,7 +1,8 @@
 using Pkg
-Pkg.activate("../../MorphoMolMonteCarlo/Project.toml")
+Pkg.activate("Project.toml")
 Pkg.instantiate()
 
+using MorphoMolHelpers
 using MorphoMol
 using JLD2
 using LinearAlgebra
@@ -12,10 +13,11 @@ function rwm_call(
     )
 
     eval(Meta.parse(config_string))
+    template_mol = MorphoMolHelpers.TEMPLATES[mol_type][1]
+    template_radii = MorphoMolHelpers.TEMPLATES[mol_type][2]
+    x_init = MorphoMolHelpers.get_initial_state(n_mol, bnds)
     
-    @load template_file template_mol template_radii x_init
     n_atoms_per_mol = length(template_mol) ÷ 3
-    n_mol = length(x_init) ÷ 6
     template_mol = reshape(template_mol,(3,n_atoms_per_mol))
     radii = vcat([template_radii for i in 1:n_mol]...);
 
@@ -24,8 +26,8 @@ function rwm_call(
     Σ = vcat([[σ_r, σ_r, σ_r, σ_t, σ_t, σ_t] for _ in 1:n_mol]...)
 
     energy(x) = solvation_free_energy_and_measures_in_bounds(x, template_mol, radii, rs, pf, 0.0, overlap_slope, bnds, delaunay_eps)
-    #perturbation(x) = perturb_single_randomly_chosen(x, σ_r, σ_t)
-    perturbation(x) = perturb_all(x, Σ)
+    perturbation(x) = perturb_single_randomly_chosen(x, σ_r, σ_t)
+    #perturbation(x) = perturb_all(x, Σ)
 
     rwm = MorphoMol.Algorithms.RandomWalkMetropolis(energy, perturbation, β)
 
