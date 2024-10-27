@@ -870,7 +870,7 @@ uuid = "66fc600b-dfda-50eb-8b99-91cfa97b1301"
 version = "1.1.7"
 
 [[deps.MorphoMol]]
-deps = ["AlphaMolWrapper_jll", "CairoMakie", "CxxWrap", "Dates", "Distances", "Distributions", "JLD2", "LinearAlgebra", "PyCall", "Random", "Revise", "Rotations", "StaticArrays", "Test"]
+deps = ["AlphaMolWrapper_jll", "CairoMakie", "CxxWrap", "Dates", "Distances", "Distributions", "GeometryBasics", "JLD2", "LinearAlgebra", "PyCall", "Random", "Revise", "Rotations", "StaticArrays", "Test"]
 path = "../MorphoMol.jl"
 uuid = "85e20460-a9b2-48f6-9df6-e154e9748d83"
 version = "0.0.1"
