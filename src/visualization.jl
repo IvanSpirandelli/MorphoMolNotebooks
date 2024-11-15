@@ -322,12 +322,6 @@ function visualize_ma_and_persistence(input, output)
     #Measures   
     mg = GridLayout(f[4, 1:4])
 
-    pf = MorphoMol.Energies.get_prefactors(1.4, 0.3665)
-    Vs = pf[1] .* Vs
-    As = pf[2] .* As
-    Cs = pf[3] .* Cs
-    Xs = pf[4] .* Xs
-
     Label(mg[0, 1:5], text = "Geometric Measures", fontsize = title_fs)
     cm = :Set2_5
     cr = (1, 5)
