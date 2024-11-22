@@ -1,5 +1,5 @@
 function visualize_persistence_with_diagrams(input, output)
-    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization(state, input["template_centers"])...))] for state in output["states"]]
+    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization_per_mol(state, input["template_centers"])...))] for state in output["states"]]
     realizations = [hcat(realizations[i]...) for i in 1:length(realizations)]
     dgms = output["PDGMs"]
     Es = output["Es"]
@@ -93,7 +93,7 @@ function visualize_persistence_with_diagrams(input, output)
 end
 
 function visualize_persistence_and_ma_with_diagrams(input, output)
-    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization(state, input["template_centers"])...))] for state in output["states"]]
+    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization_per_mol(state, input["template_centers"])...))] for state in output["states"]]
     realizations = [hcat(realizations[i]...) for i in 1:length(realizations)]
     dgms = output["PDGMs"]
     Es = output["Es"]
@@ -226,7 +226,7 @@ function visualize_persistence_and_ma_with_diagrams(input, output)
 end
 
 function visualize_ma_and_persistence(input, output)
-    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization(state, input["template_centers"])...))] for state in output["states"]]
+    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization_per_mol(state, input["template_centers"])...))] for state in output["states"]]
     realizations = [hcat(realizations[i]...) for i in 1:length(realizations)]
     Es = output["Es"]
     pf = MorphoMol.Energies.get_prefactors(input["rs"], input["η"])
@@ -358,7 +358,7 @@ end
 
 
 function visualize_ma(input, output, range)
-    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization(state, input["template_centers"])...))] for state in output["states"][range]]
+    realizations = [[e for e in eachcol(hcat(MorphoMol.Utilities.get_matrix_realization_per_mol(state, input["template_centers"])...))] for state in output["states"][range]]
     realizations = [hcat(realizations[i]...) for i in 1:length(realizations)]
     Es = output["Es"][range]
     pf = MorphoMol.Energies.get_prefactors(input["rs"], input["η"])
