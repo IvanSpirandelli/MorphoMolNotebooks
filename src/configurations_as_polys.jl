@@ -1,4 +1,4 @@
-STANDARD_COLORS = [(0.32, 0.06, 0.25), (0.06, 0.3, 0.36), (0.98, 0.54, 0.14)]
+STANDARD_COLORS = [(0.32, 0.06, 0.25), (0.06, 0.3, 0.36), (0.98, 0.54, 0.14), (0.34, 0.54, 0.98)]
 
 function configuration_to_poly(points::Vector{Vector{Float64}}, radii::Vector, colors::Vector, filepath::String)
     open(string(filepath, ".poly"), "w") do io
