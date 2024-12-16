@@ -117,6 +117,28 @@ function temp_finder(
     (isnan(T_0) || T_0 <= 0) ? T_search : T_0
 end
 
+function calculate_T0(transitions, T_search, target_acceptance_rate)
+    transitions = []
+    for i in 1:length(Es)-1
+        if Es[i] > Es[i+1]
+            push!(transitions, Es[i])
+            push!(transitions, Es[i+1])
+        end
+    end
+
+    chi_bar(T) = sum([exp(-transitions[i]/T) for i in 1:2:length(transitions)-1])/sum([exp(-transitions[i]/T) for i in 2:2:length(transitions)])
+    χ_0 = target_acceptance_rate
+    T_0 = T_search
+    try
+        while abs(chi_bar(T_0) - χ_0) > 0.00001
+            T_0 = T_0 * (log(chi_bar(T_0)) / log(χ_0 ))
+        end
+    catch 
+        println("No energy decreasing transitions found!")
+    end
+    (isnan(T_0) || T_0 <= 0) ? T_search : T_0
+end
+
 function generate_transitions(
     n::Int,
     rs::Float64,

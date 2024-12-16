@@ -82,15 +82,22 @@ function visualize_ma_measures!(mgl::GridLayout, obs_index, input, output, figur
     mgl
 end
 
+function visualize_interface_persistence_measures!(ipgl::GridLayout, obs_index, input::Dict{String, Any}, output::Dict{String, Vector}, figure_config, label_text = "Interface Persistence")
+    zero_tps = output["P0s"][figure_config["vis_range"]]
+    one_tps = output["P1s"][figure_config["vis_range"]]
+    stps = zero_tps + one_tps
+    persistence_weights = input["persistence_weights"]
+    visualize_interface_persistence_measures!(ipgl, obs_index, (zero_tps, one_tps, stps), persistence_weights, figure_config, label_text)
+end
+
 function visualize_interface_persistence_measures!(ipgl::GridLayout, obs_index, (zero_tps, one_tps, stps), persistence_weights, figure_config, label_text = "Interface Persistence")
     xs = [i for i in 1:length(stps)];
-    
     cm = :Spectral_4
     cr = (1, 4)
     
-    Label(ipgl[0, 1:3], text = label_text, fontsize = figure_config["title_fs"])
-    zero_tp_ax = Axis(ipgl[2, 1], title = "$(persistence_weights[1]) b_0")
-    one_tp_ax = Axis(ipgl[1, 2], title = "$(persistence_weights[2]) b_1")
+    Label(ipgl[0, 1], text = label_text, fontsize = figure_config["title_fs"])
+    zero_tp_ax = Axis(ipgl[1, 2], title = "$(persistence_weights[1]) b_0")
+    one_tp_ax = Axis(ipgl[1, 3], title = "$(persistence_weights[2]) b_1")
 
     zero_tp_mark = @lift(Point2f($obs_index, $@lift(zero_tps[$obs_index])))
     one_tp_mark = @lift(Point2f($obs_index, $@lift(one_tps[$obs_index])))
@@ -111,22 +118,31 @@ function visualize_interface_persistence_measures!(ipgl::GridLayout, obs_index, 
     scatter!(stp_ax, stp_mark, color=:black, markersize = tracker_ms)
 end
 
-function visualize_alpha_shape_persistence_measures!(ipgl::GridLayout, obs_index, (zero_tps, one_tps, two_tps, stps), persistence_weights, figure_config, label_text = "Interface Persistence")
+function visualize_alpha_shape_persistence_measures!(aspgl::GridLayout, obs_index, input::Dict{String, Any}, output::Dict{String, Vector}, figure_config, label_text = "Alpha Shape Persistence")
+    zero_tps = output["P0s"][figure_config["vis_range"]]
+    one_tps = output["P1s"][figure_config["vis_range"]]
+    two_tps = output["P2s"][figure_config["vis_range"]]
+    stps = zero_tps + one_tps + two_tps
+    persistence_weights = input["persistence_weights"]
+    visualize_alpha_shape_persistence_measures!(aspgl, obs_index, (zero_tps, one_tps, two_tps, stps), persistence_weights, figure_config, label_text)
+end
+
+function visualize_alpha_shape_persistence_measures!(aspgl::GridLayout, obs_index, (zero_tps, one_tps, two_tps, stps), persistence_weights, figure_config, label_text = "Alpha Shape Persistence")
     xs = [i for i in 1:length(stps)];
     
     cm = :Spectral_4
     cr = (1, 4)
     
-    Label(ipgl[0, 1:3], text = label_text, fontsize = figure_config["title_fs"])
-    zero_tp_ax = Axis(ipgl[2, 1], title = "$(persistence_weights[1]) H_0")
-    one_tp_ax = Axis(ipgl[1, 2], title = "$(persistence_weights[2]) H_1")
-    two_tp_ax = Axis(ipgl[2, 2], title = "$(persistence_weights[3]) H_2")
+    Label(aspgl[0, 1:2], text = label_text, fontsize = figure_config["title_fs"])
+    zero_tp_ax = Axis(aspgl[2, 1], title = "$(persistence_weights[1]) H_0")
+    one_tp_ax = Axis(aspgl[1, 2], title = "$(persistence_weights[2]) H_1")
+    two_tp_ax = Axis(aspgl[2, 2], title = "$(persistence_weights[3]) H_2")
 
     zero_tp_mark = @lift(Point2f($obs_index, $@lift(zero_tps[$obs_index])))
     one_tp_mark = @lift(Point2f($obs_index, $@lift(one_tps[$obs_index])))
     two_tp_mark = @lift(Point2f($obs_index, $@lift(two_tps[$obs_index])))
 
-    stp_ax = Axis(ipgl[1, 1], title = L"Σ")
+    stp_ax = Axis(aspgl[1, 1], title = L"Σ")
     stp_mark = @lift(Point2f($obs_index, $@lift(stps[$obs_index])))
 
     plot_ms = figure_config["plot_ms"]
@@ -154,9 +170,9 @@ function visualize_energy_and_theta!(etgl::GridLayout, obs_index, input, output,
     xs =  [i for i in 1:length(Es)]
     
     #Energy and Theta
-    Label(etgl[0, 1:2], text = label_text, fontsize = figure_config["title_fs"])
-    E_ax = Axis(etgl[1:2, 1], title = L"F_{sol}")
-    theta_ax = Axis(etgl[1:2, 2], title = L"\Theta")
+    Label(etgl[0, 1], text = label_text, fontsize = figure_config["title_fs"])
+    E_ax = Axis(etgl[1, 1], title = L"F_{sol}")
+    theta_ax = Axis(etgl[2, 1], title = L"\Theta")
 
     theta_mark = @lift(Point2f($obs_index, $@lift(thetas[$obs_index])))
     E_mark = @lift(Point2f($obs_index, $@lift(Es[$obs_index])))
@@ -169,4 +185,23 @@ function visualize_energy_and_theta!(etgl::GridLayout, obs_index, input, output,
 
     scatter!(E_ax, xs, Es, color = :blue, markersize = plot_ms)
     scatter!(E_ax, E_mark, color=:black, markersize = tracker_ms)
+end
+
+function visualize_molecules(points::Vector{Vector{Float64}}, radii::Vector{Float64}, n_mol::Int)
+    n_atoms_per_mol = length(points) ÷ n_mol
+    colors = [MorphoMolNotebooks.STANDARD_COLORS[i] for i in 1:n_mol for _ in 1:n_atoms_per_mol]
+    visualize_molecules(points, radii, colors)
+end
+
+function visualize_molecules(points::Vector{Vector{Float64}}, radii::Vector{Float64}, colors::Vector{Tuple{Float64, Float64, Float64}})
+    f = Figure()
+    hss = [Sphere(Point3f0(p), Float32(r)) for (p,r) in zip(points, radii)];
+    transparent_shells = [mesh(h, color = c, transparency = 0.5) for (h,c) in zip(hss, colors)]
+
+    sc = LScene(f[1,1], show_axis=false,)
+    x = sl_i.value
+    for (c,hs) in zip(colors, hss)
+        mesh!(sc, hs, color = c)
+    end
+    f
 end
