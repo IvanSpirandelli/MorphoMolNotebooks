@@ -3,6 +3,7 @@ module MorphoMolNotebooks
 using Distances
 using MorphoMol
 using GeometryBasics
+using LinearAlgebra
 using JLD2
 using Graphs
 using Graphs.Experimental
@@ -24,6 +25,6 @@ include("hs_cluster_utilities.jl")
 include("sa_scan_setup.jl")
 include("evaluation_utilities.jl")
 
-STANDARD_COLORS = [(0.32, 0.06, 0.25), (0.06, 0.3, 0.36), (0.98, 0.54, 0.14), (0.34, 0.54, 0.98)]
+STANDARD_COLORS = [(0.32, 0.06, 0.25), (0.98, 0.54, 0.14), (0.06, 0.3, 0.36), (0.34, 0.54, 0.98)]
 
 end #module MorphoMolNotebooks

@@ -3,7 +3,7 @@ function visualize_configuration_sequence!(cgl::GridLayout, obs_index, input, ou
     template_radii = input["template_radii"]
     n_atoms_per_mol = length(template_radii)
     n_mol = input["n_mol"]
-    configurations = [MorphoMol.Utilities.get_point3f_realization(state, template_centers) for state in output["states"][figure_config["vis_range"]]]
+    configurations = [MorphoMol.get_point3f_realization(state, template_centers) for state in output["states"][figure_config["vis_range"]]]
 
     Label(cgl[0, 1:2], text = label_text, fontsize = figure_config["title_fs"])
     conf_ax = LScene(cgl[1:2, 1:2])
@@ -164,9 +164,9 @@ end
 function visualize_energy_and_theta!(etgl::GridLayout, obs_index, input, output, figure_config, label_text = "Energy and Theta")
     Es = output["Es"][figure_config["vis_range"]]
     mol_type = input["mol_type"]    
-    exp_template_centers = MorphoMol.Utilities.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
-    exp_state = MorphoMol.Utilities.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["state"]
-    thetas = [MorphoMol.Utilities.average_offset_distance(exp_template_centers, input["template_centers"], exp_state, state) for state in output["states"][figure_config["vis_range"]]]
+    exp_template_centers = MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
+    exp_state = MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["state"]
+    thetas = [MorphoMol.average_offset_distance(exp_template_centers, input["template_centers"], exp_state, state) for state in output["states"][figure_config["vis_range"]]]
     xs =  [i for i in 1:length(Es)]
     
     #Energy and Theta
@@ -199,7 +199,6 @@ function visualize_molecules(points::Vector{Vector{Float64}}, radii::Vector{Floa
     transparent_shells = [mesh(h, color = c, transparency = 0.5) for (h,c) in zip(hss, colors)]
 
     sc = LScene(f[1,1], show_axis=false,)
-    x = sl_i.value
     for (c,hs) in zip(colors, hss)
         mesh!(sc, hs, color = c)
     end

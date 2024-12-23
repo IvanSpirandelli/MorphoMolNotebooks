@@ -1,9 +1,12 @@
 function get_theta(input, output)
     mol_type = input["mol_type"]
+    if !(mol_type in keys(MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY))
+        return Inf
+    end
     if input["n_mol"] == 2
-        exp_template_centers = MorphoMol.Utilities.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
-        exp_state = MorphoMol.Utilities.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["state"]
-        return MorphoMol.Utilities.average_offset_distance(exp_template_centers, input["template_centers"], exp_state, output["states"][argmin(output["Es"])])
+        exp_template_centers = MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
+        exp_state = MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["state"]
+        return MorphoMol.average_offset_distance(exp_template_centers, input["template_centers"], exp_state, output["states"][argmin(output["Es"])])
     elseif input["n_mol"] == 3
         # Consecutive assembly
         R0 = RotMatrix(@SMatrix[1.000000  0.000000  0.000000; 0.000000  1.000000  0.000000; 0.000000  0.000000  1.000000])
@@ -61,18 +64,19 @@ function get_theta(input, output)
         mindex = argmin(output["Es"])
         simulated_assembly_state = output["states"][mindex];
 
-        exp_template_centers = MorphoMol.Utilities.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
+        exp_template_centers = MorphoMol.TWOTMVSU_EXPERIMENTAL_ASSEMBLY[mol_type]["template_centers"]
         sim_template_centers = input["template_centers"]
         permutations = [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3,1,2], [3,2,1]]
         min_theta = Inf
         for experimental_state in [consecutive, two_top_one_bottom, two_bottom_one_top]
-            cand = minimum([MorphoMol.Utilities.sum_of_permutation(sim_template_centers, exp_template_centers, simulated_assembly_state, experimental_state, [1, 2, 3], perm) for perm in permutations])
+            cand = minimum([MorphoMol.sum_of_permutation(sim_template_centers, exp_template_centers, simulated_assembly_state, experimental_state, [1, 2, 3], perm) for perm in permutations])
             if cand < min_theta
                 min_theta = cand
             end
         end
         return min_theta
     end
+    Inf
 end
 
 function get_low_energy_and_theta_states(folder::String, mol_type::String; E_cutoff_ratio = 0.95, theta_cutoff = 3.0)
